@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,23 +12,36 @@ import (
 func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", Index)
-	router.HandleFunc("/games", GameIndex)
-	router.HandleFunc("/games/{gameId}", GameShow)
+	router.HandleFunc("/", index)
+	router.HandleFunc("/games", gameIndex)
+	router.HandleFunc("/games/{gameId}", gameShow)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-func Index(w http.ResponseWriter, _ *http.Request) {
+func index(w http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
 }
 
-func GameIndex(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprintln(w, "Game Index!")
+func gameIndex(w http.ResponseWriter, _ *http.Request) {
+	games := games{
+		game{Name: "Call of Duty: Modern Warfare"},
+		game{Name: "Street Fighter"},
+	}
+
+	json.NewEncoder(w).Encode(games)
 }
 
-func GameShow(w http.ResponseWriter, r *http.Request) {
+func gameShow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	gameId := vars["gameId"]
-	fmt.Fprintln(w, "Game show:", gameId)
+	gameID := vars["gameId"]
+	fmt.Fprintln(w, "Game show:", gameID)
 }
+
+type game struct {
+	Name      string
+	Completed bool
+	Rating    int
+}
+
+type games []game
