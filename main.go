@@ -39,9 +39,9 @@ func gameShow(w http.ResponseWriter, r *http.Request) {
 }
 
 type game struct {
-	Name      string
-	Completed bool
-	Rating    int
+	Name      string `json:"name"`
+	Completed bool   `json:"completed"`
+	Rating    int    `json:"rating"`
 }
 
 type games []game
